@@ -46,13 +46,11 @@ export const signUp = async (req, res) => {
 
     // Validate input data
     if (!fullname.length > 3) {
-      // alert("Fullname must be at least 3 letters long");
       return res.status(403).json({
         error: "Fullname must be at least 3 letters long",
       });
     }
     if (!email.length || !emailRegex.test(email)) {
-      // alert("Enter a valid Email");
       return res.status(403).json({ error: "Enter a valid Email" });
     }
     if (!passwordRegex.test(password)) {

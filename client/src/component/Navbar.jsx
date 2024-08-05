@@ -94,8 +94,8 @@ const Navbar = () => {
             NotBuk
           </Link>
 
-          <div className="hidden w-full md:block md:w-auto" id="navbar-default">
-            <ul className="font-medium flex flex-col md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-500 md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-red-700 ">
+          <div className=" w-auto md:block md:w-auto" id="navbar-default">
+            <ul className="font-medium flex flex-row-reverse md:p-0 mt-4 rounded-lg md:mt-0 md:border-0 md:bg-white  md:dark:bg-gray-900 ">
               {!localStorage.getItem("access_token") ? (
                 <form className="space-x-9">
                   <Link
