@@ -3,8 +3,8 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 
 const NoteState = (props) => {
-  // const host = "https://notbuk-api.vercel.app";
-  const host = "http://localhost:3000";
+  const host = "https://notbuk-api.vercel.app";
+  // const host = "http://localhost:3000";
   const notesInitial = [];
   const [notes, setNotes] = useState(notesInitial);
 
