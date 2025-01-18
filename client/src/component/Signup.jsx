@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS
+import hideIcon from "../imgs/hide.png";
+import showIcon from "../imgs/view.png";
 
 export default function Signup() {
   const [credentials, setCredentials] = useState({
@@ -9,6 +11,8 @@ export default function Signup() {
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -36,8 +40,8 @@ export default function Signup() {
         "Password should be 6 to 20 characters long with a numeric, 1 lowercase and 1 uppercase letters"
       );
     }
-    // const response = await fetch("http://localhost:3000/signup", {
-    const response = await fetch("https://notbuk-api.vercel.app/signup", {
+    const response = await fetch("http://localhost:3000/signup", {
+      // const response = await fetch("https://notbuk-api.vercel.app/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -65,6 +69,11 @@ export default function Signup() {
   const onChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <>
       <form onSubmit={handleSubmit} className="max-w-sm mx-auto mt-20">
@@ -102,21 +111,27 @@ export default function Signup() {
             required
           />
         </div>
-        <div className="mb-5">
+        <div className="mb-5 relative">
           <label
             htmlFor="password"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Your password
+            Password
           </label>
           <input
             name="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             id="password"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 pr-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             onChange={onChange}
             value={credentials.password}
             required
+          />
+          <img
+            src={showPassword ? hideIcon : showIcon}
+            alt={showPassword ? "Hide password" : "Show password"}
+            className="absolute right-3 top-12 transform -translate-y-1/2 h-5 w-5 cursor-pointer"
+            onClick={togglePasswordVisibility}
           />
         </div>
         <button
