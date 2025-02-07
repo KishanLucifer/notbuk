@@ -78,14 +78,41 @@
 // export default Navbar;
 
 import { Link, useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode"; // Import the jwt-decode library
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const navigate = useNavigate(); // Use the useNavigate hook
+  const [profileImage, setProfileImage] = useState(null);
+  const [username, setUsername] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+
+    console.log(token);
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        console.log(decodedToken);
+        // Extract profile image, username, and email
+        setProfileImage(decodedToken.profile_img || "/default-profile.png"); // Set default image if missing
+        setUsername(decodedToken.username || "User...!");
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
+    }
+  }, []);
 
   const handleSignOut = () => {
     localStorage.clear();
-    navigate("/");
+    setProfileImage("/default-profile.png");
+    setUsername("User");
+    setIsAuthenticated(false);
+    navigate("/signin");
   };
+
   return (
     <>
       <nav className="bg-white border-gray-200 dark:bg-gray-900">
@@ -96,7 +123,7 @@ const Navbar = () => {
 
           <div className=" w-auto md:block md:w-auto" id="navbar-default">
             <ul className="font-medium flex flex-row-reverse md:p-0 mt-4 rounded-lg md:mt-0 md:border-0 md:bg-white  md:dark:bg-gray-900 ">
-              {!localStorage.getItem("access_token") ? (
+              {!isAuthenticated ? (
                 <form className="space-x-9">
                   <Link
                     className=" hover:text-blue-700"
@@ -118,16 +145,16 @@ const Navbar = () => {
               ) : (
                 <>
                   <div className="flex items-center space-x-9">
-                    {/* <button className="flex items-center space-x-20 p-2">
+                    <button className="flex items-center space-x-20 p-2">
                       <img
-                        // src={profile_img}
+                        src={profileImage}
                         className="w-12 h-12 object-cover rounded-full"
                         alt="Profile"
                       />
                       <p className="text-dark-grey font-medium">
-                        Hello, username!
+                        Hello, {username}!
                       </p>
-                    </button> */}
+                    </button>
 
                     <Link
                       className=" md:hover:text-blue-700 "

@@ -54,6 +54,19 @@ export default function Signup() {
     });
     const json = await response.json();
     console.log(json);
+
+    if (!response.ok) {
+      if (response.status === 409) {
+        if (json.error === "Email already exists") {
+          return toast.error(
+            "This email is already registered. Try logging in."
+          );
+        } else if (json.error === "Username already taken") {
+          return toast.error("Username is already taken. Try a different one.");
+        }
+      }
+      return toast.error(json.error || "Signup failed. Please try again.");
+    }
     if (json.success) {
       // Save the auth token and redirect
       localStorage.setItem("access_token", json.access_token);

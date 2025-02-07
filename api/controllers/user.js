@@ -26,12 +26,19 @@ const generateUsername = async (email) => {
 const formatUserDatatoSend = (user) => {
   // let success = false;
   const access_token = jwt.sign(
-    { id: user._id },
+    {
+      id: user._id,
+      profile_img: user.personal_info.profile_img,
+      username: user.personal_info.username,
+      fullname: user.personal_info.fullname,
+      email: user.personal_info.email,
+    },
     process.env.SECRET_ACCESS_KEY
   );
   return {
     success: true,
     access_token,
+    id: user._id,
     profile_img: user.personal_info.profile_img,
     username: user.personal_info.username,
     fullname: user.personal_info.fullname,
@@ -45,8 +52,11 @@ export const signUp = async (req, res) => {
     const { fullname, email, password } = req.body;
 
     // Check if the email already exists
-    const existingUser = await User.findOne({ email: email });
+    const existingUser = await User.findOne({ "personal_info.email": email });
+
+    console.log("Existing user found:", existingUser); // Debugging
     if (existingUser) {
+      // console.log("Email exists"); // Debug
       return res.status(403).json({ error: "Email already exists" });
     }
 
@@ -60,14 +70,10 @@ export const signUp = async (req, res) => {
       return res.status(403).json({ error: "Enter a valid Email" });
     }
     if (!passwordRegex.test(password)) {
-      toast.error(
-        "Password should be 6 to 20 characters long with at least one numeric, one lowercase, and one uppercase letter."
-      );
-
-      // res.status(403).json({
-      //   error:
-      //     "Password should be 6 to 20 characters long with at least one numeric, one lowercase, and one uppercase letter",
-      // });
+      return res.status(403).json({
+        error:
+          "Password should be 6 to 20 characters long with at least one numeric, one lowercase, and one uppercase letter.",
+      });
     }
 
     // Hash password and create new user
@@ -79,7 +85,8 @@ export const signUp = async (req, res) => {
     await newUser.save();
     res.status(200).json(formatUserDatatoSend(newUser));
   } catch (error) {
-    console.error(error);
+    // console.error(error);
+    console.log("email already");
     res.status(500).json({ error: error.message });
   }
 };
