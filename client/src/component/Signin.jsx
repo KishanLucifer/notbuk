@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import hideIcon from "../imgs/hide.png";
 import showIcon from "../imgs/view.png";
-import { AuthContext } from "../context/notes/contex/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 
 export default function Signin() {
   const { login } = useContext(AuthContext);
