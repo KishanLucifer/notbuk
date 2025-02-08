@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import hideIcon from "../imgs/hide.png";
 import showIcon from "../imgs/view.png";
-import { AuthContext } from "../contex/AuthContext";
+import { AuthContext } from "../context/notes/contex/AuthContext";
 
 export default function Signin() {
   const { login } = useContext(AuthContext);
@@ -12,8 +12,8 @@ export default function Signin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch("http://localhost:3000/signin", {
-      // const response = await fetch("https://notbuk-api.vercel.app/signin", {
+    // const response = await fetch("http://localhost:3000/signin", {
+    const response = await fetch("https://notbuk-api.vercel.app/signin", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

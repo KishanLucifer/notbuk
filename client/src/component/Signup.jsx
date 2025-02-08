@@ -40,8 +40,8 @@ export default function Signup() {
         "Password should be 6 to 20 characters long with a numeric, 1 lowercase and 1 uppercase letters"
       );
     }
-    const response = await fetch("http://localhost:3000/signup", {
-      // const response = await fetch("https://notbuk-api.vercel.app/signup", {
+    // const response = await fetch("http://localhost:3000/signup", {
+    const response = await fetch("https://notbuk-api.vercel.app/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
