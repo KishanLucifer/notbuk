@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import hideIcon from "../imgs/hide.png";
 import showIcon from "../imgs/view.png";
+import { AuthContext } from "../contex/AuthContext";
 
 export default function Signin() {
+  const { login } = useContext(AuthContext);
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const navigate = useNavigate(); // Use the useNavigate hook
   const [showPassword, setShowPassword] = useState(false);
@@ -26,6 +28,7 @@ export default function Signin() {
     if (json.success) {
       // Save the auth token and redirect
       localStorage.setItem("access_token", json.access_token);
+      login(json.access_token); // Updates Navbar instantly
       navigate("/"); // Use the navigate function to redirect`
       // console.log("Navigate works");
     } else {
