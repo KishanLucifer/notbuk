@@ -1,6 +1,5 @@
 import express from "express";
 import fetchuser from "../middleware/fetchuser.js";
-
 import {
   signUp,
   signIn,

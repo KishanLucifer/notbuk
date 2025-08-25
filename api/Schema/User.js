@@ -48,6 +48,7 @@ const userSchema = mongoose.Schema({
       minlength: [3, "Username must be 3 letters long"],
       unique: true,
     },
+    ip_address: String, // Store the IP address
 
     profile_img: {
       type: String,

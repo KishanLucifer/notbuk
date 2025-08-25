@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import noteRoutes from "./routes/notes.js";
 import userRoutes from "./routes/user.js";
+import { logIpMiddleware } from "./middleware/logIp.js";
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(express.json());
 app.use(cors());
+app.use(logIpMiddleware);
 
 // Available routes
 app.use("/", noteRoutes);
@@ -20,7 +22,7 @@ app.use("/", userRoutes);
 
 // Connect to MongoDB
 mongoose
-  .connect(process.env.DB_LOCATION, {})
+  .connect(process.env.DB_LOCATION)
   .then(() => {
     console.log("Connected to MongoDB");
   })

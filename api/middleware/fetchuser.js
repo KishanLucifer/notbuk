@@ -14,8 +14,9 @@ const fetchuser = (req, res, next) => {
     if (err) {
       return res.status(403).json({ message: "Invalid or expired token" });
     }
-
+    console.log(erq.user);
     req.user = user; // Attach the user object to the request
+    console.log(user);
     next(); // Proceed to the next middleware or route handler
   });
 };

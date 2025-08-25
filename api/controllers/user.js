@@ -32,9 +32,11 @@ const formatUserDatatoSend = (user) => {
       username: user.personal_info.username,
       fullname: user.personal_info.fullname,
       email: user.personal_info.email,
+      ip_address: user.personal_info.ip_address,
     },
     process.env.SECRET_ACCESS_KEY
   );
+  console.log(access_token);
   return {
     success: true,
     access_token,
@@ -43,6 +45,7 @@ const formatUserDatatoSend = (user) => {
     username: user.personal_info.username,
     fullname: user.personal_info.fullname,
     email: user.personal_info.email,
+    ip_address: user.personal_info.ip_address,
   };
 };
 
@@ -50,6 +53,10 @@ const formatUserDatatoSend = (user) => {
 export const signUp = async (req, res) => {
   try {
     const { fullname, email, password } = req.body;
+
+    // Get user IP
+    const userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+    console.log(`Signup Request - Email: ${email}, IP: ${userIp}`);
 
     // Check if the email already exists
     const existingUser = await User.findOne({ "personal_info.email": email });
@@ -80,7 +87,14 @@ export const signUp = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const username = await generateUsername(email);
     const newUser = new User({
-      personal_info: { fullname, email, password: hashedPassword, username },
+      personal_info: {
+        fullname,
+        email,
+        password: hashedPassword,
+        username,
+        ip_address: userIp,
+      },
+      // ip_address: userIp, // Save IP in DB
     });
     await newUser.save();
     res.status(200).json(formatUserDatatoSend(newUser));
@@ -95,6 +109,10 @@ export const signUp = async (req, res) => {
 export const signIn = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // Get user IP
+    const userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+    console.log(`Signin Request - Email: ${email}, IP: ${userIp}`);
 
     // Find user by email
     const user = await User.findOne({ "personal_info.email": email });
@@ -112,6 +130,10 @@ export const signIn = async (req, res) => {
 
       return res.status(403).json({ error: "Incorrect password" });
     }
+    // Update IP address in database
+    user.ip_address = userIp;
+    await user.save();
+
     res.status(200).json(formatUserDatatoSend(user));
   } catch (error) {
     console.error(error);
@@ -124,6 +146,10 @@ export const getUserData = async (req, res) => {
   try {
     const userId = req.user.id; // Ensure req.user is set by fetchuser middleware
     const user = await User.findById(userId).select("-personal_info.password");
+
+    // Get and log IP
+    const userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+    console.log(`User Data Request - UserID: ${userId}, IP: ${userIp}`);
 
     if (!user) {
       alert("User not found");
