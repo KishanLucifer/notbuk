@@ -13,10 +13,11 @@ import "react-toastify/dist/ReactToastify.css";
 function App() {
   return (
     <>
-      <NoteState> 
+   
+      <NoteState>  
         <Router>
           <Navbar />
-          <ToastContainer
+           <ToastContainer
               position="top-center"
               autoClose={3000}
               hideProgressBar={false}
@@ -29,10 +30,10 @@ function App() {
             />
           <div className="container">
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/signin" element={<Signin />} />
-              <Route path="/signup" element={<Signup />} />
+              <Route position="top-center" path="/" element={<Home />} />
+              <Route position="top-center" path="/about" element={<About />} />
+              <Route position="top-center" path="/signin" element={<Signin />} />
+              <Route position="top-center" path="/signup" element={<Signup />} />
               </Routes>
             
           </div>
