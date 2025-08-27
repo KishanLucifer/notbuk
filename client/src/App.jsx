@@ -20,11 +20,10 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/signin" element={<Signin />} />
               <Route path="/signup" element={<Signup />} />
-              ``
-            </Routes>
+              </Routes>
             <ToastContainer
               position="bottom-center"
-              autoClose={5000}
+              autoClose={3000}
               hideProgressBar={false}
               newestOnTop={false}
               closeOnClick

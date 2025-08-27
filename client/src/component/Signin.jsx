@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import hideIcon from "../imgs/hide.png";
 import showIcon from "../imgs/view.png";
 import { AuthContext } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 export default function Signin() {
   const { login } = useContext(AuthContext);
@@ -30,6 +31,7 @@ export default function Signin() {
       localStorage.setItem("access_token", json.access_token);
       login(json.access_token); // Updates Navbar instantly
       navigate("/"); // Use the navigate function to redirect`
+      return toast.success("Successfully sign in ");
       // console.log("Navigate works");
     } else {
       alert("Invalid credentials1");

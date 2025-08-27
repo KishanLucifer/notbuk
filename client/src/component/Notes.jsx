@@ -3,6 +3,7 @@ import noteContext from "../context/notes/noteContext";
 import Noteitem from "./Noteitem";
 import AddNote from "./AddNote";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Notes = () => {
   const context = useContext(noteContext);
@@ -14,7 +15,9 @@ const Notes = () => {
       getNotes();
     } else {
       navigate("/signin");
-      alert("Signin first");
+      alert("signin or signup first");
+      // toast.error("signin or signup first");
+      
     }
   }, [getNotes, navigate]);
 
@@ -37,10 +40,18 @@ const Notes = () => {
   };
 
   const handleClick = (e) => {
-    e.preventDefault();
-    editNote(note.id, note.etitle, note.edescription, note.etag);
-    setModalOpen(false);
-  };
+  e.preventDefault();
+
+  if (note.etitle.length < 5 || note.edescription.length < 5) {
+    toast.error("Title & Description must be at least 5 characters long!");
+    return;
+  }
+
+  editNote(note.id, note.etitle, note.edescription, note.etag);
+  toast.success("Note updated successfully!");
+  setModalOpen(false);
+};
+
 
   const onChange = (e) => {
     setNote({ ...note, [e.target.name]: e.target.value });
@@ -148,9 +159,9 @@ const Notes = () => {
                   <button
                     type="submit"
                     className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                    disabled={
-                      note.etitle.length < 5 || note.edescription.length < 5
-                    }
+                    // disabled={
+                    //   note.etitle.length < 5 || note.edescription.length < 5
+                    // }
                     onClick={handleClick}
                   >
                     Update note

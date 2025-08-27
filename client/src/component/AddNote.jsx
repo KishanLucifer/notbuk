@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import noteContext from "../context/notes/noteContext";
+import { toast } from "react-toastify";
 
 const AddNote = () => {
   const context = useContext(noteContext);
@@ -9,8 +10,14 @@ const AddNote = () => {
 
   const handleClick = (e) => {
     e.preventDefault();
+     if (note.title.length < 5 || note.description.length < 5) {
+      toast.error("At least 5 characters required in Title and Description!");
+      return;
+    }
+    
     addNote(note.title, note.description, note.tag);
     setNote({ title: "", description: "", tag: "" });
+     toast.success("Note added successfully!");
   };
 
   const onChange = (e) => {
@@ -79,7 +86,7 @@ const AddNote = () => {
 
         <button
           type="submit"
-          disabled={note.title.length < 5 || note.description.length < 5}
+          // disabled={note.title.length < 5 || note.description.length < 5}
           className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           onClick={handleClick}
         >

@@ -53,7 +53,7 @@ export default function Signup() {
       }),
     });
     const json = await response.json();
-    console.log(json);
+    // console.log(json);
 
     if (!response.ok) {
       if (response.status === 409) {

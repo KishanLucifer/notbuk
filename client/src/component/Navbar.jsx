@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
@@ -8,7 +9,9 @@ const Navbar = () => {
 
   const handleSignOut = () => {
     logout();
-    navigate("/signin");
+    navigate("/signup");
+    return toast.success("Successfully sign out!");
+    
   };
 
   return (
@@ -59,7 +62,7 @@ const Navbar = () => {
                       onClick={handleSignOut}
                       aria-current="page"
                       role="button"
-                      to="/signin"
+                      to="/signup"
                     >
                       Sign out
                     </Link>
