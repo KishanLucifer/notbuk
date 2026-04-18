@@ -2,41 +2,39 @@ import User from "../Schema/User.js";
 import bcrypt from "bcrypt";
 import { nanoid } from "nanoid";
 import jwt from "jsonwebtoken";
-import express from "express";
-
-const router = express.Router();
 
 // Regex patterns
 const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
 
-// Utility function to generate unique username
+// Utility: generate unique username from email
 const generateUsername = async (email) => {
   let username = email.split("@")[0];
-  const isUsernameNotUnique = await User.exists({
-    "personal_info.username": username,
-  });
-  if (isUsernameNotUnique) {
+  const exists = await User.exists({ "personal_info.username": username });
+  if (exists) {
     username += nanoid().substring(0, 5);
   }
   return username;
 };
 
-// Format user data for sending in response
-const formatUserDatatoSend = (user) => {
-  // let success = false;
-  const access_token = jwt.sign(
+// Utility: generate JWT with expiry
+const generateToken = (user) => {
+  return jwt.sign(
     {
       id: user._id,
       profile_img: user.personal_info.profile_img,
       username: user.personal_info.username,
       fullname: user.personal_info.fullname,
       email: user.personal_info.email,
-      ip_address: user.personal_info.ip_address,
     },
-    process.env.SECRET_ACCESS_KEY
+    process.env.SECRET_ACCESS_KEY,
+    { expiresIn: "7d" }
   );
-  console.log(access_token);
+};
+
+// Utility: format user response
+const formatUserResponse = (user) => {
+  const access_token = generateToken(user);
   return {
     success: true,
     access_token,
@@ -45,80 +43,97 @@ const formatUserDatatoSend = (user) => {
     username: user.personal_info.username,
     fullname: user.personal_info.fullname,
     email: user.personal_info.email,
-    ip_address: user.personal_info.ip_address,
   };
 };
 
-//1. Signup route
+// 1. Signup
 export const signUp = async (req, res) => {
   try {
     const { fullname, email, password } = req.body;
 
-    // Get user IP
-    const userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-    console.log(`Signup Request - Email: ${email}, IP: ${userIp}`);
-
-    // Check if the email already exists
-    const existingUser = await User.findOne({ "personal_info.email": email });
-
-    console.log("Existing user found:", existingUser); // Debugging
-    if (existingUser) {
-      // console.log("Email exists"); // Debug
-      return res.status(403).json({ error: "Email already exists" });
-    }
-
-    // Validate input data
-    if (!fullname.length > 3) {
-      return res.status(403).json({
-        error: "Fullname must be at least 3 letters long",
+    // Validate inputs
+    if (!fullname || fullname.length < 3) {
+      return res.status(400).json({
+        success: false,
+        error: "Full name must be at least 3 characters long",
       });
     }
-    if (!email.length || !emailRegex.test(email)) {
-      return res.status(403).json({ error: "Enter a valid Email" });
+    if (!email || !emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        error: "Please enter a valid email address",
+      });
     }
-    if (!passwordRegex.test(password)) {
-      return res.status(403).json({
+    if (!password || !passwordRegex.test(password)) {
+      return res.status(400).json({
+        success: false,
         error:
-          "Password should be 6 to 20 characters long with at least one numeric, one lowercase, and one uppercase letter.",
+          "Password must be 6-20 characters with at least one uppercase, one lowercase, and one number",
       });
     }
 
-    // Hash password and create new user
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Check duplicate email
+    const existingUser = await User.findOne({
+      "personal_info.email": email.toLowerCase(),
+    });
+    if (existingUser) {
+      return res.status(409).json({
+        success: false,
+        error: "An account with this email already exists",
+      });
+    }
+
+    // Create user
+    const hashedPassword = await bcrypt.hash(password, 12);
     const username = await generateUsername(email);
+    const userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+
     const newUser = new User({
       personal_info: {
         fullname,
-        email,
+        email: email.toLowerCase(),
         password: hashedPassword,
         username,
         ip_address: userIp,
       },
-      // ip_address: userIp, // Save IP in DB
     });
+
     await newUser.save();
-    res.status(200).json(formatUserDatatoSend(newUser));
+    return res.status(201).json(formatUserResponse(newUser));
   } catch (error) {
-    // console.error(error);
-    console.log("email already");
-    res.status(500).json({ error: error.message });
+    if (error.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        error: "An account with this email already exists",
+      });
+    }
+    return res.status(500).json({
+      success: false,
+      error: "Server error. Please try again later.",
+    });
   }
 };
 
-//2. Signin route
+// 2. Signin
 export const signIn = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Get user IP
-    const userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-    console.log(`Signin Request - Email: ${email}, IP: ${userIp}`);
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        error: "Email and password are required",
+      });
+    }
 
-    // Find user by email
-    const user = await User.findOne({ "personal_info.email": email });
+    const user = await User.findOne({
+      "personal_info.email": email.toLowerCase(),
+    });
     if (!user) {
-      // alert("Email not found");
-      return res.status(403).json({ error: "Email not found" });
+      return res.status(401).json({
+        success: false,
+        error: "Invalid email or password",
+      });
     }
 
     const isPasswordValid = await bcrypt.compare(
@@ -126,42 +141,97 @@ export const signIn = async (req, res) => {
       user.personal_info.password
     );
     if (!isPasswordValid) {
-      // alert("Incorerct password");
-
-      return res.status(403).json({ error: "Incorrect password" });
+      return res.status(401).json({
+        success: false,
+        error: "Invalid email or password",
+      });
     }
-    // Update IP address in database
-    user.ip_address = userIp;
+
+    // Update IP on login
+    const userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+    user.personal_info.ip_address = userIp;
     await user.save();
 
-    res.status(200).json(formatUserDatatoSend(user));
+    return res.status(200).json(formatUserResponse(user));
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      success: false,
+      error: "Server error. Please try again later.",
+    });
   }
 };
 
-//3. Get user data route
+// 3. Get current user data
 export const getUserData = async (req, res) => {
   try {
-    const userId = req.user.id; // Ensure req.user is set by fetchuser middleware
-    const user = await User.findById(userId).select("-personal_info.password");
-
-    // Get and log IP
-    const userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-    console.log(`User Data Request - UserID: ${userId}, IP: ${userIp}`);
-
+    const user = await User.findById(req.user.id).select(
+      "-personal_info.password"
+    );
     if (!user) {
-      alert("User not found");
-
-      return res.status(404).json({ msg: "User not found" });
+      return res.status(404).json({
+        success: false,
+        error: "User not found",
+      });
     }
-
-    res.status(200).json(formatUserDatatoSend(user));
+    return res.status(200).json(formatUserResponse(user));
   } catch (error) {
-    console.error(error.message);
-    res.status(500).send("Internal Server Error");
+    return res.status(500).json({
+      success: false,
+      error: "Server error. Please try again later.",
+    });
   }
 };
 
-export default router;
+// 4. Change password
+export const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        error: "Current password and new password are required",
+      });
+    }
+
+    if (!passwordRegex.test(newPassword)) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "New password must be 6-20 characters with at least one uppercase, one lowercase, and one number",
+      });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found",
+      });
+    }
+
+    const isValid = await bcrypt.compare(
+      currentPassword,
+      user.personal_info.password
+    );
+    if (!isValid) {
+      return res.status(401).json({
+        success: false,
+        error: "Current password is incorrect",
+      });
+    }
+
+    user.personal_info.password = await bcrypt.hash(newPassword, 12);
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Server error. Please try again later.",
+    });
+  }
+};

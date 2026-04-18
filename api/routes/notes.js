@@ -1,22 +1,24 @@
 import express from "express";
-
+import fetchuser from "../middleware/fetchuser.js";
 import {
   getNotes,
   getNote,
   createNote,
   updateNote,
-  // likeNote,
   deleteNote,
+  togglePin,
+  searchNotes,
 } from "../controllers/notes.js";
-import fetchuser from "../middleware/fetchuser.js";
 
 const router = express.Router();
 
+// All routes are prefixed with /api/v1/notes in index.js
 router.get("/", fetchuser, getNotes);
-router.post("/", fetchuser, createNote);
+router.get("/search", fetchuser, searchNotes);
 router.get("/:id", fetchuser, getNote);
-router.patch("/:id", fetchuser, updateNote);
+router.post("/", fetchuser, createNote);
+router.put("/:id", fetchuser, updateNote);
 router.delete("/:id", fetchuser, deleteNote);
-// router.patch("/:id/likeNote", likeNote);
+router.patch("/:id/pin", fetchuser, togglePin);
 
 export default router;

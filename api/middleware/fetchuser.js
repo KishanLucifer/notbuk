@@ -1,24 +1,39 @@
 import jwt from "jsonwebtoken";
 
 const fetchuser = (req, res, next) => {
-  // Get the user from the jwt token and add id to req object
-  const access_token = req.header("access_token");
+  // Support both "Authorization: Bearer <token>" and legacy "access_token" header
+  let token = req.header("access_token");
 
-  if (!access_token) {
-    return res
-      .status(401)
-      .json({ message: "Access token is missing or invalid" });
+  if (!token) {
+    const authHeader = req.header("Authorization");
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.slice(7);
+    }
   }
 
-  jwt.verify(access_token, process.env.SECRET_ACCESS_KEY, (err, user) => {
-    if (err) {
-      return res.status(403).json({ message: "Invalid or expired token" });
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      error: "Access denied. No authentication token provided.",
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_ACCESS_KEY);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      return res.status(401).json({
+        success: false,
+        error: "Token has expired. Please sign in again.",
+      });
     }
-    console.log(req.user);
-    req.user = user; // Attach the user object to the request
-    console.log(user);
-    next(); // Proceed to the next middleware or route handler
-  });
+    return res.status(403).json({
+      success: false,
+      error: "Invalid authentication token.",
+    });
+  }
 };
 
 export default fetchuser;

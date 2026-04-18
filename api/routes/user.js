@@ -4,14 +4,15 @@ import {
   signUp,
   signIn,
   getUserData,
-  // googleAuth,
+  changePassword,
 } from "../controllers/user.js";
 
 const router = express.Router();
 
+// All routes are prefixed with /api/v1/auth in index.js
 router.post("/signup", signUp);
 router.post("/signin", signIn);
-router.post("/getuserdata", fetchuser, getUserData);
-// router.post("/google-auth", googleAuth);
+router.get("/me", fetchuser, getUserData);
+router.put("/change-password", fetchuser, changePassword);
 
 export default router;
