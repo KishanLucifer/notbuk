@@ -3,9 +3,8 @@ import { useState, useCallback } from "react";
 import { toast } from "react-toastify";
 
 const NoteState = ({ children }) => {
-  const host =
-    import.meta.env.VITE_SERVER_DOMAIN + "/api/v1" ||
-    "http://localhost:3000/api/v1";
+  const baseDomain = import.meta.env.VITE_SERVER_DOMAIN || "http://localhost:3000";
+  const host = baseDomain.endsWith("/api/v1") ? baseDomain : `${baseDomain}/api/v1`;
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState({ total: 0, pinned: 0 });

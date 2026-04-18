@@ -26,9 +26,8 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const host =
-    import.meta.env.VITE_SERVER_DOMAIN + "/api/v1" ||
-    "http://localhost:3000/api/v1";
+  const baseDomain = import.meta.env.VITE_SERVER_DOMAIN || "http://localhost:3000";
+  const host = baseDomain.endsWith("/api/v1") ? baseDomain : `${baseDomain}/api/v1`;
 
   // Password strength
   const getPasswordStrength = (pwd) => {
