@@ -2,8 +2,8 @@ import { useContext } from "react";
 import noteContext from "../context/notes/noteContext";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
-import { SpotlightCard } from "../components/aceternity/SpotlightCard";
-import { Badge } from "../components/ui/Badge";
+import { SpotlightCard } from "./aceternity/SpotlightCard";
+import { Badge } from "./ui/Badge";
 import { Pin, PinOff, Pencil, Trash2, Calendar } from "lucide-react";
 
 const COLOR_MAP = {
@@ -60,7 +60,7 @@ const Noteitem = ({ note, updateNote }) => {
           </button>
         </div>
       </div>,
-      { autoClose: false, closeOnClick: false, draggable: false }
+      { autoClose: false, closeOnClick: false, draggable: false },
     );
   };
 
@@ -81,9 +81,7 @@ const Noteitem = ({ note, updateNote }) => {
       <SpotlightCard
         className={`h-full border-l-4 ${colorClass} group`}
         spotlightColor={
-          note.color === "default"
-            ? "hsl(263 70% 58% / 0.08)"
-            : undefined
+          note.color === "default" ? "hsl(263 70% 58% / 0.08)" : undefined
         }
       >
         <div className="p-5 flex flex-col h-full min-h-[200px]">

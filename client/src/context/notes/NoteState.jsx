@@ -3,7 +3,9 @@ import { useState, useCallback } from "react";
 import { toast } from "react-toastify";
 
 const NoteState = ({ children }) => {
-  const host = import.meta.env.VITE_SERVER_DOMAIN || "http://localhost:3000/api/v1";
+  const host =
+    import.meta.env.VITE_SERVER_DOMAIN + "/api/v1" ||
+    "http://localhost:3000/api/v1";
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState({ total: 0, pinned: 0 });
@@ -42,7 +44,13 @@ const NoteState = ({ children }) => {
   }, [host]);
 
   // 2. Add a Note
-  const addNote = async (title, description, tag, color = "default", priority = "low") => {
+  const addNote = async (
+    title,
+    description,
+    tag,
+    color = "default",
+    priority = "low",
+  ) => {
     try {
       const response = await fetch(`${host}/notes`, {
         method: "POST",
@@ -99,7 +107,7 @@ const NoteState = ({ children }) => {
       const json = await response.json();
       if (json.success && json.note) {
         setNotes((prev) =>
-          prev.map((note) => (note._id === id ? json.note : note))
+          prev.map((note) => (note._id === id ? json.note : note)),
         );
         return true;
       } else {
@@ -123,7 +131,7 @@ const NoteState = ({ children }) => {
       const json = await response.json();
       if (json.success && json.note) {
         setNotes((prev) =>
-          prev.map((note) => (note._id === id ? json.note : note))
+          prev.map((note) => (note._id === id ? json.note : note)),
         );
         setStats((prev) => ({
           ...prev,
@@ -148,7 +156,7 @@ const NoteState = ({ children }) => {
         {
           method: "GET",
           headers: headers(),
-        }
+        },
       );
       const json = await response.json();
       if (json.success && Array.isArray(json.notes)) {

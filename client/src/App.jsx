@@ -1,9 +1,15 @@
-import Navbar from "./component/Navbar";
-import Home from "./component/Home";
-import About from "./component/About";
-import Signin from "./component/Signin";
-import Signup from "./component/Signup";
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Home from "./components/Home";
+import About from "./components/About";
+import Signin from "./components/Signin";
+import Signup from "./components/Signup";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import NoteState from "./context/notes/NoteState";
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
@@ -100,7 +106,10 @@ function NotFound() {
       <p className="text-xl text-muted-foreground mb-8">
         This page doesn&apos;t exist in your notebook.
       </p>
-      <a href="/" className="text-primary hover:text-primary/80 underline underline-offset-4 transition-colors">
+      <a
+        href="/"
+        className="text-primary hover:text-primary/80 underline underline-offset-4 transition-colors"
+      >
         Go back home
       </a>
     </div>

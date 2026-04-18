@@ -5,17 +5,17 @@ import AddNote from "./AddNote";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
-import { Input } from "../components/ui/Input";
-import { Textarea } from "../components/ui/Textarea";
-import { Button } from "../components/ui/Button";
+import { Input } from "./ui/Input";
+import { Textarea } from "./ui/Textarea";
+import { Button } from "./ui/Button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "../components/ui/Dialog";
-import { Badge } from "../components/ui/Badge";
+} from "./ui/Dialog";
+import { Badge } from "./ui/Badge";
 import {
   Search,
   StickyNote,
@@ -116,7 +116,7 @@ const Notes = () => {
       editData.edescription,
       editData.etag,
       editData.ecolor,
-      editData.epriority
+      editData.epriority,
     );
 
     if (success) {
@@ -198,7 +198,9 @@ const Notes = () => {
         {searchResults !== null && (
           <div className="mt-2 flex items-center gap-2">
             <span className="text-xs text-muted-foreground">
-              {searchResults.length} result{searchResults.length !== 1 ? "s" : ""} for &quot;{searchQuery}&quot;
+              {searchResults.length} result
+              {searchResults.length !== 1 ? "s" : ""} for &quot;{searchQuery}
+              &quot;
             </span>
             <button
               onClick={() => {
@@ -253,9 +255,7 @@ const Notes = () => {
             <Inbox className="w-10 h-10 text-muted-foreground" />
           </div>
           <h3 className="text-lg font-semibold text-foreground mb-2">
-            {searchResults !== null
-              ? "No notes found"
-              : "No notes yet"}
+            {searchResults !== null ? "No notes found" : "No notes yet"}
           </h3>
           <p className="text-sm text-muted-foreground max-w-sm">
             {searchResults !== null

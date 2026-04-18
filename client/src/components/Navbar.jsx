@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "../components/ui/DropdownMenu";
+} from "./ui/DropdownMenu";
 import {
   BookOpen,
   LogOut,
@@ -46,7 +46,11 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 group" id="nav-logo">
+          <Link
+            to="/"
+            className="flex items-center gap-2.5 group"
+            id="nav-logo"
+          >
             <motion.div
               whileHover={{ rotate: 10 }}
               className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/25"

@@ -2,9 +2,9 @@ import { useContext, useState } from "react";
 import noteContext from "../context/notes/noteContext";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
-import { Input } from "../components/ui/Input";
-import { Textarea } from "../components/ui/Textarea";
-import { Button } from "../components/ui/Button";
+import { Input } from "./ui/Input";
+import { Textarea } from "./ui/Textarea";
+import { Button } from "./ui/Button";
 import { Plus, X, Tag, Palette, Flag, Send } from "lucide-react";
 
 const NOTE_COLORS = [
@@ -50,11 +50,17 @@ const AddNote = () => {
       note.description,
       note.tag || "General",
       note.color,
-      note.priority
+      note.priority,
     );
 
     if (success) {
-      setNote({ title: "", description: "", tag: "", color: "default", priority: "low" });
+      setNote({
+        title: "",
+        description: "",
+        tag: "",
+        color: "default",
+        priority: "low",
+      });
       setExpanded(false);
       toast.success("Note created!");
     }
@@ -178,7 +184,9 @@ const AddNote = () => {
                         <button
                           key={p.value}
                           type="button"
-                          onClick={() => setNote({ ...note, priority: p.value })}
+                          onClick={() =>
+                            setNote({ ...note, priority: p.value })
+                          }
                           className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all duration-200 ${
                             note.priority === p.value
                               ? `${p.color} bg-secondary`

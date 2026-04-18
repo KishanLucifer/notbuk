@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { BackgroundBeams } from "../components/aceternity/BackgroundBeams";
+import { BackgroundBeams } from "./aceternity/BackgroundBeams";
 import {
   Shield,
   Zap,
@@ -155,7 +155,9 @@ export default function About() {
                 key={s.action}
                 className="glass rounded-xl px-5 py-3.5 flex items-center justify-between"
               >
-                <span className="text-sm text-muted-foreground">{s.action}</span>
+                <span className="text-sm text-muted-foreground">
+                  {s.action}
+                </span>
                 <div className="flex gap-1.5">
                   {s.keys.map((key) => (
                     <kbd
